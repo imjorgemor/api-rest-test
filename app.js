@@ -1,9 +1,9 @@
-const express = require('express') // require -> commonJS
+const express = require('express')
 const crypto = require('node:crypto')
 const cors = require('cors')
 
 const movies = require('./movies.json')
-const { validateMovie, validatePartialMovie } = require('./schemas/movieSchema')
+const { validateMovie, validatePartialMovie } = require('./schema/movieSchema')
 
 const app = express()
 app.use(express.json())
@@ -12,8 +12,6 @@ app.use(cors({
         const ACCEPTED_ORIGINS = [
             'http://localhost:8080',
             'http://localhost:1234',
-            'https://movies.com',
-            'https://midu.dev'
         ]
 
         if (ACCEPTED_ORIGINS.includes(origin)) {
