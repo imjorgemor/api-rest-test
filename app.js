@@ -1,15 +1,12 @@
-const express = require('express')
+const express = require('express') // require -> commonJS
 const crypto = require('node:crypto')
 const cors = require('cors')
 
 const movies = require('./movies.json')
-const { validateMovie, validatePartialMovie } = require('./schema/movieSchema')
+const { validateMovie, validatePartialMovie } = require('./schemas/movieSchema')
 
 const app = express()
-app.disable('x-powered-by')
-
 app.use(express.json())
-
 app.use(cors({
     origin: (origin, callback) => {
         const ACCEPTED_ORIGINS = [
@@ -30,37 +27,31 @@ app.use(cors({
         return callback(new Error('Not allowed by CORS'))
     }
 }))
+app.disable('x-powered-by') // deshabilitar el header X-Powered-By: Express
 
+// métodos normales: GET/HEAD/POST
+// métodos complejos: PUT/PATCH/DELETE
+
+// CORS PRE-Flight
+// OPTIONS
+
+// Todos los recursos que sean MOVIES se identifica con /movies
 app.get('/movies', (req, res) => {
-    //cors se soluciona en el back
-    //metodos normales: GET/HEAD/POST
-    // se puede utilizar un middleware npm i cors -E
-    // if (ACCEPTED_ORIGINS.includes(origin)) {
-    //     res.header('Access-Control-Allow-Origin', origin)
-    //     res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
-
-    // }
-    // const origin = req.header('origin')
-
-    const { genre } = req.query //en la req esta la query y podemos acceder a ella
+    const { genre } = req.query
     if (genre) {
         const filteredMovies = movies.filter(
-            movie => movie.genre.some(g > g.toLowerCase() === genre.toLowerCase())
+            movie => movie.genre.some(g => g.toLowerCase() === genre.toLowerCase())
         )
         return res.json(filteredMovies)
     }
     res.json(movies)
 })
 
-//metodos complejos: PUT/PATCH/DELETE UTILIZAN EL CORS PRE-FLIGHT
-//options
-
-app.get('/movies/:id', (req, res) => { //path-to-regex se utiliza por debajo de express
+app.get('/movies/:id', (req, res) => {
     const { id } = req.params
     const movie = movies.find(movie => movie.id === id)
     if (movie) return res.json(movie)
-    //si no encuentra la movie que devuelva un 404
-    res.status(404).json({ message: 'movie not found' })
+    res.status(404).json({ message: 'Movie not found' })
 })
 
 app.post('/movies', (req, res) => {
@@ -124,6 +115,5 @@ app.patch('/movies/:id', (req, res) => {
 const PORT = process.env.PORT ?? 3001
 
 app.listen(PORT, () => {
-    console.log(`server successfully listening on port http://localhost:${PORT}`)
+    console.log(`server listening on port http://localhost:${PORT}`)
 })
-
