@@ -10,10 +10,6 @@ app.disable('x-powered-by')
 
 app.use(express.json())
 
-app.get('/', (req, res) => {
-    res.json({ hola: "hola mundo" })
-})
-
 app.use(cors({
     origin: (origin, callback) => {
         const ACCEPTED_ORIGINS = [
